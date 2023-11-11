@@ -3,9 +3,6 @@
 import os, time
 
 import MySQLdb
-from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
 
 from config import Credentials
 
@@ -14,10 +11,10 @@ mydb = MySQLdb.connect(Credentials.host, Credentials.username, Credentials.passw
 c=mydb.cursor()
 
 try:
-    c.execute("create database food")
+    c.execute("create database {}".format(Credentials.database))
 except:
     pass
-c.execute("use temps")
+c.execute("use {}".format(Credentials.database))
 try:
     c.execute("create table item(Batchno integer primary key, name varchar(25), No_of_items integer(10),Expiry date)")
     mydb.commit()
