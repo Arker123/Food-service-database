@@ -10,17 +10,66 @@ mydb = MySQLdb.connect(Credentials.host, Credentials.username, Credentials.passw
 
 c=mydb.cursor()
 
+# Create database if doesn't exist
 try:
     c.execute("create database {}".format(Credentials.database))
 except:
     pass
+
+# Use the database
 c.execute("use {}".format(Credentials.database))
+
+# Create the raw table relations if it doesn't exist
 try:
-    c.execute("create table item(Batchno integer primary key, name varchar(25), No_of_items integer(10),Expiry date)")
+    c.execute("create table Raw_materials(Material_id integer primary key, Name varchar(25), Price integer(10),Expiry_date date, Seller_id integer)")
     mydb.commit()
 except:
     pass
 
+# Create the Recipes relations if it doesn't exist
+try:
+    c.execute("create table Recipes(Recipe_id integer primary key, Name varchar(25), Cost_Price integer(10), Selling_price integer(10), Availaible Tinyint(1))")
+    mydb.commit()
+except:
+    pass
+
+# Create the Recipe_items relations if it doesn't exist
+try:
+    c.execute("create table Recipe_items(Recipe_id integer primary key, Material_id integer)")
+    mydb.commit()
+except:
+    pass
+
+# Create the Seller_info relations if it doesn't exist
+try:
+    c.execute("create table Seller_info(Seller_id integer primary key, name varchar(25), contact integer(30), email varchar(25))")
+    mydb.commit()
+except:
+    pass
+
+# Create the Seller_sold relations if it doesn't exist
+try:
+    c.execute("create table Seller_sold(Seller_id integer primary key, date_sold date, Material_id integer)")
+    mydb.commit()
+except:
+    pass
+
+# Create the Seller_sold relations if it doesn't exist
+try:
+    c.execute("create table Customer_info(Customer_id integer primary key, name varchar(25), contact integer(30), email varchar(25), age integer(8), gender varchar(1))")
+    mydb.commit()
+except:
+    pass
+
+# Create the Sales relations if it doesn't exist
+try:
+    c.execute("create table Sales(Customer_id integer primary key, date_purchased date, Recipe_id integer, amount_paid integer)")
+    mydb.commit()
+except:
+    pass
+
+
+'''
 try:
     c.execute("create table passwd(user varchar(20) primary key, passwd varchar(20))")
     mydb.commit()
@@ -967,3 +1016,4 @@ regBtn.place(relx=0.87,rely=0.1, relwidth=0.1)
 Menu()
 root.mainloop()
 
+'''
