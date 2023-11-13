@@ -1,20 +1,20 @@
-#Program for managing stock in medical store
+# Program for managing stock in medical store
 
-import os, time
-import hashlib
+import os
 import sys
-
+import time
+import hashlib
 from datetime import date
 
 import MySQLdb
 
 from config import Credentials
 
-profit_margin = 0.20     # 20% profit margin
+profit_margin = 0.20  # 20% profit margin
 
 mydb = MySQLdb.connect(Credentials.host, Credentials.username, Credentials.password)
 
-c=mydb.cursor()
+c = mydb.cursor()
 
 # Create database if doesn't exist
 try:
@@ -27,28 +27,36 @@ c.execute("use {}".format(Credentials.database))
 
 # Create the raw table relations if it doesn't exist
 try:
-    c.execute("create table Raw_materials(Material_id integer primary key AUTO_INCREMENT, Name varchar(25), Price integer(10),Expiry_date date, Seller_id integer)")
+    c.execute(
+        "create table Raw_materials(Material_id integer primary key AUTO_INCREMENT, Name varchar(25), Price integer(10),Expiry_date date, Seller_id integer)"
+    )
     mydb.commit()
 except:
     pass
 
 # Create the Recipes relations if it doesn't exist
 try:
-    c.execute("create table Recipes(Recipe_id integer primary key, Name varchar(25), Cost_Price integer(10), Selling_price integer(10), Availaible Tinyint(1))")
+    c.execute(
+        "create table Recipes(Recipe_id integer primary key, Name varchar(25), Cost_Price integer(10), Selling_price integer(10), Availaible Tinyint(1))"
+    )
     mydb.commit()
 except:
     pass
 
 # Create the Recipe_items relations if it doesn't exist
 try:
-    c.execute("create table Recipe_items(Recipe_id integer primary key, Material_id integer, Quantity_required integer(10))")
+    c.execute(
+        "create table Recipe_items(Recipe_id integer primary key, Material_id integer, Quantity_required integer(10))"
+    )
     mydb.commit()
 except:
     pass
 
 # Create the Seller_info relations if it doesn't exist
 try:
-    c.execute("create table Seller_info(Seller_id integer primary key, name varchar(25), contact BIGINT, email varchar(25))")
+    c.execute(
+        "create table Seller_info(Seller_id integer primary key, name varchar(25), contact BIGINT, email varchar(25))"
+    )
     mydb.commit()
 except:
     pass
@@ -62,17 +70,22 @@ except:
 
 # Create the Seller_sold relations if it doesn't exist
 try:
-    c.execute("create table Customer_info(Customer_id integer primary key, name varchar(25), contact integer(30), email varchar(25), age integer(8), gender varchar(1))")
+    c.execute(
+        "create table Customer_info(Customer_id integer primary key, name varchar(25), contact integer(30), email varchar(25), age integer(8), gender varchar(1))"
+    )
     mydb.commit()
 except:
     pass
 
 # Create the Sales relations if it doesn't exist
 try:
-    c.execute("create table Sales(Customer_id integer primary key, date_purchased date, Recipe_id integer, amount_paid integer)")
+    c.execute(
+        "create table Sales(Customer_id integer primary key, date_purchased date, Recipe_id integer, amount_paid integer)"
+    )
     mydb.commit()
 except:
     pass
+
 
 def menu():
     print("1. Add new Raw material")
@@ -88,6 +101,7 @@ def menu():
     print("11. Show sales")
     print("12. Exit")
 
+
 def showRawMaterials():
     query = "select * from Raw_materials"
     c.execute(query)
@@ -95,6 +109,7 @@ def showRawMaterials():
     print("Material_id\t\tName\t\tPrice\t\tExpiry_date\t\tSeller_id")
     for row in rows:
         print("{}\t\t{}\t\t{}\t\t{}\t\t{}".format(row[0], row[1], row[2], row[3], row[4]))
+
 
 def showRecipes():
     query = "select * from Recipes"
@@ -104,6 +119,7 @@ def showRecipes():
     for row in rows:
         print("{}\t\t{}\t\t{}\t\t{}\t\t{}".format(row[0], row[1], row[2], row[3], row[4]))
 
+
 def showSellers():
     query = "select * from Seller_info"
     c.execute(query)
@@ -111,6 +127,7 @@ def showSellers():
     print("Seller_id\t\tName\t\tContact\t\tEmail")
     for row in rows:
         print("{}\t\t{}\t\t{}\t\t{}".format(row[0], row[1], row[2], row[3]))
+
 
 def showCustomers():
     query = "select * from Customer_info"
@@ -120,6 +137,7 @@ def showCustomers():
     for row in rows:
         print("{}\t\t{}\t\t{}\t\t{}\t\t{}\t\t{}".format(row[0], row[1], row[2], row[3], row[4], row[5]))
 
+
 def showSales():
     query = "select * from Sales"
     c.execute(query)
@@ -128,18 +146,22 @@ def showSales():
     for row in rows:
         print("{}\t\t{}\t\t{}\t\t{}".format(row[0], row[1], row[2], row[3]))
 
+
 def addSeller():
     name = input("Enter the name of the seller: ")
     contact = int(input("Enter the contact number of the seller: "))
     email = input("Enter the email of the seller: ")
 
     # hash the contact (int) number and email
-    seller_id = int(hashlib.sha256(str(contact).encode('utf-8')).hexdigest(), 16) % 10**8
+    seller_id = int(hashlib.sha256(str(contact).encode("utf-8")).hexdigest(), 16) % 10**8
 
-    query = "insert into Seller_info(Seller_id, name, contact, email) values({}, '{}', {}, '{}')".format(seller_id, name, contact, email)
+    query = "insert into Seller_info(Seller_id, name, contact, email) values({}, '{}', {}, '{}')".format(
+        seller_id, name, contact, email
+    )
     c.execute(query)
     mydb.commit()
     print("Seller added successfully")
+
 
 def addRecipe():
     name = input("Enter the name of the recipe: ")
@@ -153,7 +175,9 @@ def addRecipe():
         material_id = int(input("Enter the material id: "))
         quantity = int(input("Enter the quantity required: "))
 
-        query = "insert into Recipe_items(Recipe_id, Material_id, Quantity_required) values({}, {}, {})".format(name, material_id, quantity)
+        query = "insert into Recipe_items(Recipe_id, Material_id, Quantity_required) values({}, {}, {})".format(
+            name, material_id, quantity
+        )
 
         c.execute(query)
         mydb.commit()
@@ -176,20 +200,25 @@ def addRecipe():
 
         print("Material added successfully")
         choice = input("Do you want to add more materials? (y/n): ")
-        if choice == 'n':
+        if choice == "n":
             break
-    
-    query = "insert into Recipes(Name, Cost_Price, Selling_price, Availaible) values('{}', {}, {}, {})".format(name, cost_price, selling_price, availaible)
+
+    query = "insert into Recipes(Name, Cost_Price, Selling_price, Availaible) values('{}', {}, {}, {})".format(
+        name, cost_price, selling_price, availaible
+    )
     c.execute(query)
     mydb.commit()
     print("Recipe added successfully")
+
 
 def addRawMaterial(seller_id):
     name = input("Enter the name of the raw material: ")
     price = int(input("Enter the price of the raw material: "))
     expiry = input("Enter the expiry date of the raw material: ")
 
-    query = "insert into Raw_materials(Name, Price, Expiry_date, Seller_id) values('{}', {}, '{}', {})".format(name, price, expiry, seller_id)
+    query = "insert into Raw_materials(Name, Price, Expiry_date, Seller_id) values('{}', {}, '{}', {})".format(
+        name, price, expiry, seller_id
+    )
     c.execute(query)
     mydb.commit()
     print("Raw material added successfully")
@@ -203,8 +232,10 @@ def showFoodMenu():
     for row in rows:
         print("{}\t\t{}\t\t{}".format(row[0], row[1], row[2]))
 
+
 def sellRecipe():
     pass
+
 
 def addCustomer():
     query = "select max(Customer_id) from Customer_info"
@@ -219,7 +250,7 @@ def addCustomer():
     gender = input("Enter the gender of the customer: ")
 
     # query = "insert into Customer_info(Customer_id, name, contact, email, age, gender) values"
-    
+
 
 def verifySeller(seller_id):
     query = "select * from Seller_info where Seller_id={}".format(seller_id)
@@ -228,6 +259,7 @@ def verifySeller(seller_id):
     if len(rows) == 0:
         return False
     return True
+
 
 def main():
     # Show the menu
@@ -241,12 +273,12 @@ def main():
             while True:
                 addRawMaterial(seller_id)
                 choice = input("Do you want to add more materials? (y/n): ")
-                if choice == 'n':
+                if choice == "n":
                     break
         else:
             print("Seller not found")
             return
-        
+
     elif choice == 2:
         addRecipe()
     elif choice == 3:
@@ -272,8 +304,10 @@ def main():
     else:
         print("Invalid choice")
 
+
 if __name__ == "__main__":
     main()
+
 
 def insert_demo_items():
     query = "insert into Raw_materials(Name, Price, Expiry_date, Seller_id) values('Milk', 50, '2023-11-31', 12345678)"
@@ -304,8 +338,8 @@ def insert_demo_items():
     c.execute(query)
     mydb.commit()
 
-    query = "insert into Seller_info(Seller_id, name, contact, email) values(12345678, 'ABC', 1234567890, 'abc@gmail.com')"
+    query = (
+        "insert into Seller_info(Seller_id, name, contact, email) values(12345678, 'ABC', 1234567890, 'abc@gmail.com')"
+    )
     c.execute(query)
     mydb.commit()
-
-
